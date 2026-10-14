@@ -1,0 +1,274 @@
+#Programmer's Name: Reatlehile Leeto
+#Date: May 2026
+#Program Purpose:
+
+import tkinter as tk
+from tkinter import messagebox
+
+# 1. Object-Oriented & Encapsulation Layer
+
+class Person:
+    """Base class demonstrating Inheritance."""
+    def __init__(self, name: str, age: int):
+        self.name = name 
+        self.age = age
+
+class Learner(Person):
+    """Class inherit from Person, Displaying complete encapsulation."""
+    def __init__(self, learner_id: int, name: str, age: int, course: str):
+        #This will call the class costructor initialized common attributes
+        super().__init__(name, age)
+
+        # Specific attributes for a learner
+        self. learner_id = learner_id
+        self. course = course
+        self. marks = []
+
+        # Encapsulation:
+        
+        self. _performance_status = "No Marks Registered"
+
+# 2. Algorithmic & Recursive Layer
+
+def recursive_sum(marks_list: list, index: int = 0) -> float:
+    """
+    A recursive function to calculate total marks.
+    The function will call itself instead of using a loop or sum().
+    This will continue until it hits the base case. 
+    """
+    # Base Case: When we've looked at every item, return 0
+    if index == len(marks_list):
+        return 0.0
+    # Recursive Case: Current element + sum of the rest of the list
+    return marks_list[index] + recursive_sum(marks_list, index + 1)
+
+
+def calculate_average(learner: Learner) -> float:
+    """This will calculate the average mark using the recursive sum function."""
+    if not learner.marks:
+        return 0.0
+    total_score = recursive_sum(learner.marks)
+    # Protect against Division by Zero errors and acts as a error handling
+    return round(total_score / len(learner.marks), 2)
+
+# 3. Controller & Core Functions Layer
+
+def check_certificate_eligibility(avarage: float) -> bool:
+    """A predicate function returning True or False."""
+    return avarage >= 50.0
+
+
+def display_summary_card(learner: Learner, title_prefix: str = "Learner Summary"):
+    """
+    A function leveraging a default argument.
+    Printing block, formatted details required in the terminal
+
+    """
+
+    avg = calculate_average
+
+    # Decision structure to determine performance category
+
+    if avg < 50:
+        result_category = "Fail"
+    elif 50 <= avg < 75:
+        result_category = "Pass"
+    else:
+        result_category = "Passed with distinction"
+
+    learner.set_stattus(result_category)
+    has_cert = "Yes" if check_certificate_eligibility(avg) else "No"
+
+    print(f"\n----{title_prefix}")
+    print(f"Learner ID: {learner.learner_id}")
+    print(f"Name: {learner.name}")
+    print(f"Age: {learner.age}")
+    print(f"Course: {learner.course}")
+    print(f"Average: {avg}")
+    print(f"Result: {learner.get_status()}")
+    print(f"Certificate: {has_cert}")
+
+def find_learner_by_id(learners_list: list, target_id: int) -> Learner:
+    """Search list for matching learner's reference"""
+    # Use of a for loop
+    for student in learners_list:
+        if student.learner_id == target_id:
+            return student
+        return None
+
+# 4. Entry Interface & Menu Loop (RUNTIME)
+
+def run_system():
+    # Tracking array system for storing learner's object
+    learners = []
+
+    # Condition-controlled loop for the main menu structure
+
+    while True:
+        print("\n^^^^ Learner Progress Tracking System ^^^^")
+        print("1. Add learner")
+        print("2. Enter marks")
+        print("3. View all learners")
+        print("4. Search learner")
+        print("5. Update learner")
+        print("6. Remove learner")
+        print("7. Show learner result") 
+        print("8. Exit")  
+
+        # Exception handling for menu selections and user inputs
+        try:
+            choice = int(input("Enter your choice: "))
+        except ValueError:
+            messagebox.showerror("Invalid input", "Please enter a valid numeric from the menu.")
+            continue
+
+        if choice == 1:
+            try:
+                l_id = int(input("Learner ID: "))
+
+               # Checking for uniqueness 
+                if find_learner_by_id(Learner, l_id) is not None:
+                   print("Error: This learner's ID already exists. ")
+                   continue 
+
+                name = input("Enter learner's name: ").strip()
+                age = int(input("Enter learner's age: "))
+
+                # Validate learner age
+                if age <= 0 or age > 45:
+                    messagebox.showwarning("Validation Error", "Invalid age input ")
+                    continue
+
+                course = input("Enter course name: "). strip()
+
+                # Installing and adding object to tracking list
+                new_student = Learner(learner_id=l_id, name=name, age=age, course=course )
+                Learner.append(new_student)
+
+
+                # Simple GUI alerts
+                messagebox.showinfo("Success", "Learner added successfully.")
+
+            except ValueError:
+                messagebox.showerror("System Message","Invalid input")
+    
+        elif choice == 2:
+            try:
+                l_id = int(input("Learner ID: "))
+                student = find_learner_by_id(Learner, l_id)
+
+                if student is None:
+                   print("Learner not found.")
+                   continue
+
+                num_marks = int(input("Enter the marks you want? "))
+                if num_marks <= 0:
+                  continue
+
+                count = 1
+                while count <= num_marks:
+                   try:
+                    mark_input = float(input(f"Enter the marks of a learner {count}"))
+
+                    # Validate marks 
+                    if mark_input < 0 or mark_input > 100:
+                        print("Enter marks, but the range is between 0 to 100 ")
+                        continue
+
+                    student.marks.append(mark_input)
+                    count += 1
+                
+                   except ValueError:
+                    print("Invalid mark format, enter numeric only.")
+
+                    messagebox.showinfo("Marks capture")
+        
+            except ValueError:
+                messagebox.showerror("Error, wrong number sequece have been entered!!")
+
+        elif choice == 3:
+            if not Learner:
+               print("No registered learner found in a school's database ")
+            else:
+               for student in Learner:
+                display_summary_card(student)
+
+        elif choice == 4:
+            try:
+               l_id = int(input("Enter learner's ID in order to search: "))
+              # Use of keyword for argument configuration explicitly
+               student = find_learner_by_id(learners_list=Learner, target_id=l_id)
+
+               if student:
+                    display_summary_card(student)
+               else:
+                    print("Learner record not found in school's database ")
+
+            except ValueError:
+                print("Numeric ID's only")
+
+        elif choice == 5:
+            try:
+               l_id = int(input("Enter learner's ID to update a learner's information"))
+               student = find_learner_by_id(Learner, l_id)
+
+               if student:
+                    student.name = input("Enter new learner's name: ").strip()
+                    student.age = int(input("Enter new learner's age: "))
+                    student.course = input("Enter new learner's course: ").strip()
+
+                    messagebox.showinfo("New Learner's details updated")
+            
+               else:
+                    print("Learner not found")
+
+            except ValueError:
+               print("Wrong data modifications applied")
+
+        elif choice == 6:
+            try:
+                l_id = int(input("Enter learner's ID in order to remove a learner"))
+                student = find_learner_by_id(Learner, l_id)
+
+                if student:
+                    Learner.remove(student)
+                    messagebox.showinfo("Learner has being succefully removed from school's database. ")
+            
+                else:
+                  print("No learner found in school's database.")
+
+            except ValueError:
+                print("Wrong input parameters")
+
+        elif choice == 7:
+            try:
+                l_id = int(input("Enter learner ID"))
+                student = find_learner_by_id(Learner, l_id) 
+
+                if student:
+                   # This is explicitly forces computation on text output
+                   display_summary_card(student, title_prefix="Learner's performance review")
+                   # Show a dialogue box displaying categorical outcomes clearly
+                   messagebox.showinfo("Pass/Fail result", f"Status: {student.get_status()}") 
+
+                else:
+                    print("Learner ID not found")
+
+            except ValueError:
+                print("Wrong numeric keys entered")
+    
+        elif choice == 8:
+            # Exit message box alert
+            confirm = messagebox.askyesno("Exit confirmation, Do you want to exit tracking system")
+
+        if confirm:
+            
+            print("Exit learner tracking system")
+            # Using 'break'system to exit execution frame work
+            break
+
+    else:
+        print("Wrong selection value, try selecting menu tools that match with Learner tracking system")
+
+if __name__=="__main__":
+    run_system()       
